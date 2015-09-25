@@ -272,6 +272,16 @@ public: // Name and guiders
    */
   void
   refreshNonce();
+  
+  /** @brief Set value of the subscription field
+  */
+  Interest&
+  setSubscription(uint8_t subsc);
+  
+  /** @brief Get value of the subscription field
+  */
+  uint8_t
+  getSubscription() const;
 
 public: // local control header
   nfd::LocalControlHeader&
@@ -437,6 +447,7 @@ public: // EqualityComparable concept
 
 private:
   Name m_name;
+  mutable Block m_subscribe;
   Selectors m_selectors;
   mutable Block m_nonce;
   time::milliseconds m_interestLifetime;

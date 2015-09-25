@@ -87,6 +87,22 @@ Interest::setNonce(uint32_t nonce)
   return *this;
 }
 
+uint8_t
+Interest::getSubscription() const
+{
+  return *reinterpret_cast<const uint8_t*>(m_subscribe.value());
+}
+
+Interest&
+Interest::setSubscription(uint8_t subsc)
+{
+  m_nonce = makeBinaryBlock(tlv::Subscription,
+                            reinterpret_cast<const uint8_t*>(&subsc),
+                            sizeof(subsc));
+  m_wire.reset();
+  return *this;
+}
+
 void
 Interest::refreshNonce()
 {

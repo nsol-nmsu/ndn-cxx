@@ -66,6 +66,7 @@ enum {
   Selectors     = 9,
   Nonce         = 10,
   // <Unassigned> = 11,
+  Subscription  = 11,
   InterestLifetime          = 12,
   MinSuffixComponents       = 13,
   MaxSuffixComponents       = 14,
@@ -133,6 +134,26 @@ enum ContentTypeValue {
    *  @warning Experimental. Not defined in NDN-TLV spec.
    */
   ContentType_Nack = 3
+};
+
+/** @brief values for Subscription field
+ */
+enum SubscriptionValue {
+        /** @brief not a subscription interest
+         */
+        Subscription_None = 0,
+        
+        /** @brief soft subscription
+         */
+        Subscription_Soft = 1,
+        
+        /** @brief hard subscription
+         */
+        Subscription_Hard = 2,
+        
+        /** @brief unsubscription
+         */
+        Subscription_Unsub = 3
 };
 
 /**
