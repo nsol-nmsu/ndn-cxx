@@ -268,6 +268,9 @@ Interest::wireEncode(EncodingImpl<TAG>& encoder) const
   // Nonce
   getNonce(); // to ensure that Nonce is properly set
   totalLength += encoder.prependBlock(m_nonce);
+  
+  // Subscription
+  totalLength += encoder.prependBlock(m_subscribe);
 
   // Selectors
   if (hasSelectors())
@@ -335,6 +338,9 @@ Interest::wireDecode(const Block& wire)
     }
   else
     m_selectors = Selectors();
+    
+  // Subscription
+  m_subscribe = m_wire.get(tlv::Subscription);
 
   // Nonce
   m_nonce = m_wire.get(tlv::Nonce);
