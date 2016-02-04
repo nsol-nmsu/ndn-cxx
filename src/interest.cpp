@@ -96,9 +96,31 @@ Interest::getSubscription() const
 Interest&
 Interest::setSubscription(uint8_t subsc)
 {
-  m_nonce = makeBinaryBlock(tlv::Subscription,
+  m_subscribe = makeBinaryBlock(tlv::Subscription,
                             reinterpret_cast<const uint8_t*>(&subsc),
                             sizeof(subsc));
+  m_wire.reset();
+  return *this;
+}
+
+const uint8_t * 
+Interest::getPayload() const
+{
+  return m_payload.value();
+}
+
+size_t
+Interest::getPayloadLength() const
+{
+  return m_payload.value_size();
+}
+
+Interest&
+Interest::setPayload(const uint8_t * payload, size_t length)
+{
+  m_payload = makeBinaryBlock(tlv::Payload,
+                              payload,
+                              length);
   m_wire.reset();
   return *this;
 }
@@ -244,6 +266,10 @@ Interest::wireEncode(EncodingImpl<TAG>& encoder) const
 
   // (reverse encoding)
 
+  // Payload
+  if(getPayloadLength() != 0)
+        totalLength += encoder.prependBlock(m_payload);
+
   if (hasLink()) {
     if (hasSelectedDelegation()) {
       totalLength += prependNonNegativeIntegerBlock(encoder,
@@ -376,6 +402,11 @@ Interest::wireDecode(const Block& wire)
     else {
       BOOST_THROW_EXCEPTION(Error("Invalid selected delegation index when decoding Interest"));
     }
+  }
+  
+  val = m_wire.find(tlv::Payload);
+  if (val != m_wire.elements_end()){
+    m_payload = *val;
   }
 }
 

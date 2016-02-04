@@ -282,6 +282,21 @@ public: // Name and guiders
   */
   uint8_t
   getSubscription() const;
+  
+  /** @brief Set value of the payload field
+  */
+  Interest&
+  setPayload(const uint8_t * payload, size_t length);
+  
+  /** @brief Get value of the payload field
+  */
+  const uint8_t *
+  getPayload() const;
+  
+  /** @brief Get the length of the payload field
+  */
+  size_t
+  getPayloadLength() const;
 
 public: // local control header
   nfd::LocalControlHeader&
@@ -450,6 +465,7 @@ private:
   mutable Block m_subscribe;
   Selectors m_selectors;
   mutable Block m_nonce;
+  mutable Block m_payload;
   time::milliseconds m_interestLifetime;
 
   mutable Block m_link;
