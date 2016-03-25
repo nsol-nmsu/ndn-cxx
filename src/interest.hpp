@@ -30,6 +30,7 @@
 #include "management/nfd-local-control-header.hpp"
 #include "tag-host.hpp"
 #include "link.hpp"
+#include "ns3/uinteger.h"
 
 namespace ndn {
 
@@ -272,22 +273,22 @@ public: // Name and guiders
    */
   void
   refreshNonce();
-  
+
   /** @brief Set value of the subscription field
   */
   Interest&
-  setSubscription(uint8_t subsc);
-  
+  setSubscription(const uint32_t subsc);
+
   /** @brief Get value of the subscription field
   */
-  uint8_t
+  const uint32_t
   getSubscription() const;
-  
+
   /** @brief Set value of the payload field
   */
   Interest&
   setPayload(const uint8_t * payload, size_t length);
-  
+
   /** @brief Get value of the payload field
   */
   const uint8_t *
@@ -462,7 +463,6 @@ public: // EqualityComparable concept
 
 private:
   Name m_name;
-  mutable Block m_subscribe;
   Selectors m_selectors;
   mutable Block m_nonce;
   mutable Block m_payload;
@@ -471,6 +471,8 @@ private:
   mutable Block m_link;
   size_t m_selectedDelegationIndex;
   mutable Block m_wire;
+
+  uint32_t m_subscribe;
 
   nfd::LocalControlHeader m_localControlHeader;
   friend class nfd::LocalControlHeader;

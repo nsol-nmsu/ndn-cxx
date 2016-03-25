@@ -23,6 +23,7 @@
 #include "util/random.hpp"
 #include "util/crypto.hpp"
 #include "data.hpp"
+//#include "ns3/uinteger.h"
 
 namespace ndn {
 
@@ -36,13 +37,16 @@ static_assert(std::is_base_of<tlv::Error, Interest::Error>::value,
 Interest::Interest()
   : m_interestLifetime(time::milliseconds::min())
   , m_selectedDelegationIndex(INVALID_SELECTED_DELEGATION_INDEX)
+  , m_subscribe(0)
 {
+
 }
 
 Interest::Interest(const Name& name)
   : m_name(name)
   , m_interestLifetime(time::milliseconds::min())
   , m_selectedDelegationIndex(INVALID_SELECTED_DELEGATION_INDEX)
+  , m_subscribe(0)
 {
 }
 
@@ -50,6 +54,7 @@ Interest::Interest(const Name& name, const time::milliseconds& interestLifetime)
   : m_name(name)
   , m_interestLifetime(interestLifetime)
   , m_selectedDelegationIndex(INVALID_SELECTED_DELEGATION_INDEX)
+  , m_subscribe(0)
 {
 }
 
@@ -87,20 +92,23 @@ Interest::setNonce(uint32_t nonce)
   return *this;
 }
 
-uint8_t
+const uint32_t
 Interest::getSubscription() const
 {
-  return *reinterpret_cast<const uint8_t*>(m_subscribe.value());
+   return m_subscribe;
+
 }
 
+
 Interest&
-Interest::setSubscription(uint8_t subsc)
+Interest::setSubscription(const uint32_t subsc)
 {
-  m_subscribe = makeBinaryBlock(tlv::Subscription,
-                            reinterpret_cast<const uint8_t*>(&subsc),
-                            sizeof(subsc));
-  m_wire.reset();
-  return *this;
+
+   m_subscribe = subsc;
+
+   m_wire.reset();
+   return *this;
+
 }
 
 const uint8_t * 
@@ -267,8 +275,18 @@ Interest::wireEncode(EncodingImpl<TAG>& encoder) const
   // (reverse encoding)
 
   // Payload
-  if(getPayloadLength() != 0)
+/*  if(getPayloadLength() != 0)
         totalLength += encoder.prependBlock(m_payload);
+*/
+
+
+   // Subscription
+  if (getSubscription() >= 0) {
+      totalLength += prependNonNegativeIntegerBlock(encoder,
+                                                    tlv::Subscription,
+                                                    getSubscription());
+  }
+
 
   if (hasLink()) {
     if (hasSelectedDelegation()) {
@@ -294,9 +312,6 @@ Interest::wireEncode(EncodingImpl<TAG>& encoder) const
   // Nonce
   getNonce(); // to ensure that Nonce is properly set
   totalLength += encoder.prependBlock(m_nonce);
-  
-  // Subscription
-  totalLength += encoder.prependBlock(m_subscribe);
 
   // Selectors
   if (hasSelectors())
@@ -364,9 +379,6 @@ Interest::wireDecode(const Block& wire)
     }
   else
     m_selectors = Selectors();
-    
-  // Subscription
-  m_subscribe = m_wire.get(tlv::Subscription);
 
   // Nonce
   m_nonce = m_wire.get(tlv::Nonce);
@@ -403,11 +415,27 @@ Interest::wireDecode(const Block& wire)
       BOOST_THROW_EXCEPTION(Error("Invalid selected delegation index when decoding Interest"));
     }
   }
-  
+  else {
+    m_selectedDelegationIndex = INVALID_SELECTED_DELEGATION_INDEX;
+  }
+
+  // Subscription
+  val = m_wire.find(tlv::Subscription);
+  if (val != m_wire.elements_end()) {
+    m_subscribe = readNonNegativeInteger(*val);
+  }
+  else {
+    m_subscribe = 0;
+  }
+
+  // Payload
+/*
   val = m_wire.find(tlv::Payload);
   if (val != m_wire.elements_end()){
     m_payload = *val;
   }
+*/
+
 }
 
 bool
@@ -529,6 +557,12 @@ operator<<(std::ostream& os, const Interest& interest)
     os << delim << "ndn.Nonce=" << interest.getNonce();
     delim = '&';
   }
+
+  if (interest.getSubscription() >= 0) {
+    os << delim << "ndn.Subscription=" << interest.getSubscription();
+    delim = '&';
+  }
+
   if (!interest.getExclude().empty()) {
     os << delim << "ndn.Exclude=" << interest.getExclude();
     delim = '&';
