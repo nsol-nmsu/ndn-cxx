@@ -249,6 +249,14 @@ public: // Name and guiders
     return m_nonce.hasWire();
   }
 
+  /** @brief Check if Payload set
+   */
+  bool
+  hasPayload() const
+  {
+    return m_payload.hasWire();
+  }
+
   /** @brief Get Interest's nonce
    *
    *  If nonce was not set before this call, it will be automatically assigned to a random value

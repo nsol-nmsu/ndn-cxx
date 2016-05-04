@@ -111,7 +111,7 @@ Interest::setSubscription(const uint32_t subsc)
 
 }
 
-const uint8_t * 
+const uint8_t *
 Interest::getPayload() const
 {
   return m_payload.value();
@@ -275,10 +275,9 @@ Interest::wireEncode(EncodingImpl<TAG>& encoder) const
   // (reverse encoding)
 
   // Payload
-/*  if(getPayloadLength() != 0)
+  if(getPayloadLength() != 0) {
         totalLength += encoder.prependBlock(m_payload);
-*/
-
+  }
 
    // Subscription
   if (getSubscription() >= 0) {
@@ -286,7 +285,6 @@ Interest::wireEncode(EncodingImpl<TAG>& encoder) const
                                                     tlv::Subscription,
                                                     getSubscription());
   }
-
 
   if (hasLink()) {
     if (hasSelectedDelegation()) {
@@ -429,12 +427,10 @@ Interest::wireDecode(const Block& wire)
   }
 
   // Payload
-/*
   val = m_wire.find(tlv::Payload);
   if (val != m_wire.elements_end()){
     m_payload = *val;
   }
-*/
 
 }
 
@@ -560,6 +556,11 @@ operator<<(std::ostream& os, const Interest& interest)
 
   if (interest.getSubscription() >= 0) {
     os << delim << "ndn.Subscription=" << interest.getSubscription();
+    delim = '&';
+  }
+
+  if (interest.hasPayload()) {
+    os << delim << "ndn.Payload=" << interest.getPayload();
     delim = '&';
   }
 
