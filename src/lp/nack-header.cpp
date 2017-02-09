@@ -39,6 +39,9 @@ operator<<(std::ostream& os, NackReason reason)
   case NackReason::NO_ROUTE:
     os << "NoRoute";
     break;
+  case NackReason::LINK_DOWN:
+    os << "LinkDown";
+    break;
   default:
     os << "None";
     break;
@@ -122,6 +125,7 @@ NackHeader::getReason() const
   case NackReason::CONGESTION:
   case NackReason::DUPLICATE:
   case NackReason::NO_ROUTE:
+  case NackReason::LINK_DOWN:
     return m_reason;
   default:
     return NackReason::NONE;
