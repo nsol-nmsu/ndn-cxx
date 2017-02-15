@@ -65,7 +65,7 @@ enum {
   NameComponent = 8,
   Selectors     = 9,
   Nonce         = 10,
-  // <Unassigned> = 11,
+  Subscription   = 11,
   InterestLifetime          = 12,
   MinSuffixComponents       = 13,
   MaxSuffixComponents       = 14,
@@ -87,6 +87,7 @@ enum {
   LinkPreference = 30,
   LinkDelegation = 31,
   SelectedDelegation = 32,
+  Payload        = 33,
 
   AppPrivateBlock1 = 128,
   AppPrivateBlock2 = 32767

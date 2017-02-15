@@ -272,6 +272,31 @@ public: // Name and guiders
   void
   refreshNonce();
 
+  /** @brief Set value of the subscription field
+  */
+  Interest&
+  setSubscription(const uint32_t subsc);
+
+  /** @brief Get value of the subscription field
+  */
+  const uint32_t
+  getSubscription() const;
+
+  /** @brief Set value of the payload field
+  */
+  Interest&
+  setPayload(const uint8_t * payload, size_t length);
+
+  /** @brief Get value of the payload field
+  */
+  const uint8_t *
+  getPayload() const;
+
+  /** @brief Get the length of the payload field
+  */
+  size_t
+  getPayloadLength() const;
+
 public: // Selectors
   /**
    * @return true if Interest has any selector present
@@ -397,12 +422,15 @@ private:
   Name m_name;
   Selectors m_selectors;
   mutable Block m_nonce;
+  mutable Block m_payload;
   time::milliseconds m_interestLifetime;
 
   mutable Block m_link;
   mutable shared_ptr<Link> m_linkCached;
   size_t m_selectedDelegationIndex;
   mutable Block m_wire;
+
+  uint32_t m_subscribe;
 };
 
 std::ostream&
