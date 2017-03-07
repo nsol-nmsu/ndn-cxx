@@ -36,7 +36,7 @@ namespace ndn {
  *
  *  If a packet is longer than this size, library and application MAY drop it.
  */
-const size_t MAX_NDN_PACKET_SIZE = 8800;
+const size_t MAX_NDN_PACKET_SIZE = 18000;
 
 /**
  * @brief Namespace defining NDN-TLV related constants and procedures
